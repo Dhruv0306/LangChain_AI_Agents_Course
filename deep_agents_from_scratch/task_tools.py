@@ -24,8 +24,9 @@ class SubAgent(TypedDict):
 
     name: str
     description: str
-    prompt: str
-    tools: NotRequired[list[str]]
+    prompt: NotRequired[str]
+    system_prompt: NotRequired[str]
+    tools: NotRequired[list[str | BaseTool]]
 
 
 def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
@@ -53,16 +54,27 @@ def _create_task_tool(tools, subagents: list[SubAgent], model, state_schema):
             tool_ = tool(tool_)
         tools_by_name[tool_.name] = tool_
 
+    def resolve_tool(item):
+        """Resolve a tool reference from either a tool object or its name."""
+        if isinstance(item, BaseTool):
+            return item
+        return tools_by_name[item]
+
     # Create specialized sub-agents based on configurations
     for _agent in subagents:
         if "tools" in _agent:
             # Use specific tools if specified
-            _tools = [tools_by_name[t] for t in _agent["tools"]]
+            _tools = [resolve_tool(t) for t in _agent["tools"]]
         else:
             # Default to all tools
             _tools = tools
+        system_prompt = _agent.get("system_prompt") or _agent.get("prompt")
+        if system_prompt is None:
+            raise KeyError(
+                f"Sub-agent {_agent['name']} must define either 'system_prompt' or 'prompt'"
+            )
         agents[_agent["name"]] = create_agent(   # updated 1.0
-            model, system_prompt=_agent["prompt"], tools=_tools, state_schema=state_schema
+            model, system_prompt=system_prompt, tools=_tools, state_schema=state_schema
         )
 
     # Generate description of available sub-agents for the tool description
