@@ -196,6 +196,7 @@ Writing goals:
 - Prefer short paragraphs over dense blocks of text
 - Highlight the achievement, what was learned, and why it matters
 - Explicitly mention the most relevant skills learned from the course, certificate, or experience
+- Use simple English and avoid heavy, fancy, or overly complex words
 - Use a confident but not exaggerated tone
 - Avoid buzzword inflation, fake humility, and overclaiming
 
@@ -203,6 +204,7 @@ Post style guidance:
 - For a certificate or badge: mention the issuer, topic, and why it matters
 - For a project: mention the problem, what was built, and the result or lesson
 - If a project link is provided, mention what you built, what you did, or what part you contributed
+- When a project link is provided, add 2 to 3 simple explanatory lines about the project and your work
 - For a course completion: mention the skill gained and the next step
 - For a promotion or milestone: mention the accomplishment without sounding boastful
 - For an open-ended achievement: make the significance obvious without inventing context
@@ -334,6 +336,8 @@ Final output goals:
   - `Final score: X/100`
   - the full LinkedIn post
 - the post body should include the key skills learned and, when a project link is present, what was built or done in the project
+- the post body should use simple English and avoid heavy, fancy, or overly complex words
+- if a project link is present, add 2 to 3 short explanatory lines about the project and what you built or did
 - a brief explanation of what changed can be included only if the user explicitly asks for it
 - keep the file trail in files, not in the final assistant message
 - if the score is below 80, the final reply must not present the post as ready for publication
