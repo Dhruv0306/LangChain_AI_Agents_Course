@@ -2,6 +2,7 @@
 
 from typing import Annotated
 
+import os
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import InjectedToolCallId, tool
 from langgraph.prebuilt import InjectedState
@@ -62,6 +63,14 @@ def write_file(
     """Write content to a file in the virtual filesystem."""
     files = state.get("files", {})
     files[file_path] = content
+
+    # Write the updated file back to the storage
+    file_path2 = os.path.join("assets", file_path)
+    # Make sure the directory exists
+    os.makedirs(os.path.dirname(file_path2), exist_ok=True)
+    with open(file_path2, "w", encoding="utf-8", newline="\n") as f:
+        f.write(content)
+
     return Command(
         update={
             "files": files,

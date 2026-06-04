@@ -195,16 +195,16 @@ Writing goals:
 - Keep the opening line strong and specific
 - Prefer short paragraphs over dense blocks of text
 - Highlight the achievement, what was learned, and why it matters
-- Explicitly mention the most relevant skills learned from the course, certificate, or experience
+- Explicitly mention the most relevant skills(3-5 skills) learned from the course, certificate, or experience
 - Use simple English and avoid heavy, fancy, or overly complex words
 - Use a confident but not exaggerated tone
 - Avoid buzzword inflation, fake humility, and overclaiming
 
 Post style guidance:
 - For a certificate or badge: mention the issuer, topic, and why it matters
-- For a project: mention the problem, what was built, and the result or lesson
-- If a project link is provided, mention what you built, what you did, or what part you contributed
-- When a project link is provided, add 2 to 3 simple explanatory lines about the project and your work
+- For a project: mention the problem, what was built, and the result or lesson, with project title
+- If a project link is provided, mention what you built, what you did, or what part you contributed, with project title
+- When a project link is provided, add 4 to 5 explanatory lines about the project and your work
 - For a course completion: mention the skill gained and the next step
 - For a promotion or milestone: mention the accomplishment without sounding boastful
 - For an open-ended achievement: make the significance obvious without inventing context
@@ -220,6 +220,26 @@ Revision behavior:
 - If the validator flags inaccuracies, revise only the affected claims
 - If the scorer requests improvement, focus on the exact weaknesses cited
 - Preserve the file trail across revisions so later stages can compare versions
+
+Revision Input Protocol:
+When revising after validation and scoring:
+- You will receive three files to read first:
+  1. validation_report_v*.md - List of issues flagged by the validator
+  2. score_report_v*.md - Scoring breakdown and prioritized revision directives
+  3. raw_writer_draft_v*.md - The draft being revised
+- Process revision directives in priority order (provided by scorer)
+- Focus on HARD_ERRORs first, then STYLE_ISSUEs
+- For each revision directive:
+  - Read the cited evidence file to understand the concern
+  - Rewrite only the affected claim or section
+  - Preserve all other content unchanged
+  - Do not rewrite the entire post unless specifically instructed
+- After revisions, save the updated draft to a new versioned file: raw_writer_draft_v{N+1}.md
+- Create a revision summary file that cites:
+  - The prior draft version
+  - Which revision points from the scorer you addressed
+  - The new draft version file
+- Treat the file trail as documentation of your revision process
 """
 
 
@@ -254,6 +274,17 @@ Decision guidance:
 - If the draft is factually clean, say so clearly
 - If anything is questionable, call it out directly
 - Prefer precise corrections over vague advice
+
+Revision Points Output Format:
+- Structure revision points as a clear, prioritized list
+- Each point should include:
+  1. The specific claim or section that needs revision
+  2. Why it's problematic (unsupported, inaccurate, unclear, etc.)
+  3. What evidence supports or refutes it (cite evidence files)
+  4. A suggested fix or reframe (be specific, not vague)
+- Tag each point as either "HARD_ERROR" (factual) or "STYLE_ISSUE" (tone/clarity)
+- The scorer will use these revision points to create actionable directives for the writer
+- Keep revision points under 2-3 sentences each for clarity
 """
 
 
@@ -268,7 +299,7 @@ Inputs:
 
 Scoring rules:
 - Score out of 100
-- Use a threshold of 80 for passing
+- Use a threshold of 90 for passing
 - Reward accuracy, clarity, professionalism, and platform fit
 - Penalize unsupported claims, weak structure, and generic filler
 - Penalize any mismatch between the achievement and the evidence
@@ -284,7 +315,7 @@ Required output:
 - numeric score
 - pass/fail decision
 - short rationale
-- the exact revision directives if the score is below 80
+- the exact revision directives if the score is below 90
 - the file trail used for the score
 - include a machine-readable line exactly like: `Final score: 87/100`
 - include `PASS` or `FAIL` explicitly
@@ -294,8 +325,19 @@ Required output:
 Workflow rules:
 - Save the full score output to a file before summarizing it
 - Create a summary file that references the raw score file, the validator file, and the draft file
-- If the score is below 80, the revision directives must be specific enough for the writer to act on immediately
-- If the score is 80 or above, explain why the post is ready to pass forward
+- If the score is below 90, the revision directives must be specific enough for the writer to act on immediately
+- If the score is 90 or above, explain why the post is ready to pass forward
+
+Revision Directives Format:
+- Add a todo list of specific revisions needed to reach a passing score
+- Each todo item should be a clear, actionable change to the draft
+- The main agent will use this todo list to guide the writer's next steps
+- If the score is close to passing (e.g. 85-89), prioritize the most impactful revisions first
+- If the score is well below passing (e.g. below 85), provide a more comprehensive revision plan
+- If the score is above 90, the revision directives should be empty or state that no revisions are needed
+- Always keep the file trail intact so the main agent can make informed decisions
+- Do not give vague feedback like "make it better" or "improve the tone"
+- Be as specific as possible to guide the writer's revisions effectively
 """
 
 
@@ -335,14 +377,25 @@ Final output goals:
 - the final reply should contain exactly two visible parts:
   - `Final score: X/100`
   - the full LinkedIn post
-- the post body should include the key skills learned and, when a project link is present, what was built or done in the project
+- the post body should include the key skills(3-5 skills) learned and, when a project link is present, what was built or done in the project with project title
 - the post body should use simple English and avoid heavy, fancy, or overly complex words
-- if a project link is present, add 2 to 3 short explanatory lines about the project and what you built or did
+- if a project link is present, add 4 to 5 explanatory lines about the project and what you built or did with project title.
 - a brief explanation of what changed can be included only if the user explicitly asks for it
 - keep the file trail in files, not in the final assistant message
-- if the score is below 80, the final reply must not present the post as ready for publication
-- if the score is 80 or above, explicitly say the post is ready to publish
+- if the score is below 90, the final reply must not present the post as ready for publication
+- if the score is 90 or above, explicitly say the post is ready to publish
 - never end with only a score or only a summary; always include the post body itself
+
+Revision Loop Protocol:
+When score < 90 and revisions are needed:
+1. Read score_report_v*.md to get prioritized revision directives
+2. Invoke the writer sub-agent with:
+   - The revision directives from the scorer
+   - References to validation_report_v*.md and raw_writer_draft_v*.md
+3. Wait for the writer to produce raw_writer_draft_v{N+1}.md
+4. Re-invoke validator on the new draft
+5. Re-invoke scorer on the validation results
+6. Repeat until score >= 90 or user requests to stop
 
 Never pass along unsupported claims just to make the post sound better.
 """
